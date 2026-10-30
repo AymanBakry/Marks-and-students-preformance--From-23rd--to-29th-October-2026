@@ -3,16 +3,16 @@ const SHEET_ID = "1CxDCPkOi42Vh8X5Vrw7FVHKtREN4kLI9VHuKGDh4Cuk";
 const SHEET_NAME = "Sheet1";
 const URL_CSV = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
 
-// أعمدة الدرجات (ابدأ العد من 0: A=0, B=1, C=2 ...) عدّل الأسماء أو الأرقام حسب ملفك
+// أعمدة الدرجات (ابدأ العد من 0: A=0, B=1, C=2 ...)
 const FIELDS = [
-  { col: 2, label: "اختبار 1", max: 20 },
-  { col: 3, label: "الأداء الأكاديمي", text: true },
-  { col: 4, label: "المشاركة", max: 10 },
-  { col: 5, label: "الأداء السلوكي والانضباط الصفي", text: true },
-  { col: 6, label: "السلوك", max: 10 },
-  { col: 7, label: "المذكرة", max: 10 },
-  { col: 8, label: "المهمة 1", max: 5 },
-  { col: 9, label: "المهمة 2", max: 5 },
+  { col: 2, label: "اختبار 1", max: 20, icon: "📝" },
+  { col: 3, label: "الأداء الأكاديمي", text: true, icon: "📘" },
+  { col: 4, label: "المشاركة", max: 10, icon: "🙋" },
+  { col: 5, label: "الأداء السلوكي والانضباط الصفي", text: true, icon: "🌟" },
+  { col: 6, label: "السلوك", max: 10, icon: "🤝" },
+  { col: 7, label: "المذكرة", max: 10, icon: "📓" },
+  { col: 8, label: "المهمة 1", max: 5, icon: "✏️" },
+  { col: 9, label: "المهمة 2", max: 5, icon: "📌" },
 ];
 const TOTAL_COL = 10; // عمود المجموع (K)
 let TOTAL_MAX = 60;
@@ -38,7 +38,6 @@ function parseCSV(text) {
   return out;
 }
 
-// تحويل الأرقام العربية/الهندية إلى إنجليزية وإزالة المسافات والرموز
 function normalize(s) {
   return String(s || "")
     .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
@@ -62,17 +61,43 @@ async function loadData() {
 
 function show(r) {
   const box = document.getElementById("student");
-  let html = `<h2>${esc(r[1])}</h2><div class="seat">رقم الجلوس: ${esc(r[0])}</div><table>`;
+  const name = (r[1] || "").trim();
+  const total = num(r[TOTAL_COL]);
+  const pct = total === null ? 0 : Math.min(100, Math.round(total / TOTAL_MAX * 100));
+
+  let tiles = "", comments = "";
   FIELDS.forEach(f => {
     const v = (r[f.col] || "").trim();
-    if (!v && f.text) return;
+    if (f.text) {
+      if (v) comments += `<div class="comment"><span class="ci">${f.icon}</span><div><b>${esc(f.label)}</b><p>${esc(v)}</p></div></div>`;
+      return;
+    }
     const n = num(v);
-    const shown = f.max ? `${n === null ? "-" : esc(n)} / ${f.max}` : esc(v);
-    html += `<tr><th>${esc(f.label)}</th><td>${shown}</td></tr>`;
+    const ratio = n === null ? 0 : n / f.max;
+    const cls = n === null ? "g0" : ratio >= 0.85 ? "g1" : ratio >= 0.6 ? "g2" : "g3";
+    tiles += `<div class="tile ${cls}"><div class="ti">${f.icon}</div><div class="tl">${esc(f.label)}</div>
+      <div class="tv"><b>${n === null ? "-" : esc(n)}</b><span> / ${f.max}</span></div>
+      <div class="bar"><i style="width:${Math.min(100, ratio * 100)}%"></i></div></div>`;
   });
-  html += `</table><div class="total">المجموع: ${esc(num(r[TOTAL_COL]) ?? "-")} / ${TOTAL_MAX}</div>`;
-  box.innerHTML = html;
+
+  let color = "#16a34a", msg = "أداء ممتاز، بارك الله فيه وزاده من فضله 🌟";
+  if (pct < 90) { color = "#2563eb"; msg = "أداء جيد جدًا، نتمنى له المزيد من التقدم 👏"; }
+  if (pct < 75) { color = "#ea580c"; msg = "أداء جيد، ونشجعه على بذل مزيد من الجهد 💪"; }
+  if (pct < 50) { color = "#CE1126"; msg = "يحتاج إلى مزيد من الاهتمام والمتابعة، ونأمل التعاون بين المدرسة والأسرة 🤝"; }
+
+  box.innerHTML = `
+    <div class="stu-head">
+      <div class="avatar">${esc(name.charAt(0) || "؟")}</div>
+      <div><h2>${esc(name)}</h2><span class="seat">رقم الجلوس: ${esc(r[0])}</span></div>
+    </div>
+    <div class="tiles">${tiles}</div>
+    ${comments}
+    <div class="totalbox">
+      <div class="ring" style="--p:${pct};--c:${color}"><div><span>${total === null ? "-" : esc(total)}<small>من ${TOTAL_MAX}</small></span></div></div>
+      <div><h4>المجموع الكلي: ${pct}%</h4><p>${msg}</p></div>
+    </div>`;
   box.classList.remove("hidden");
+  box.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 async function search() {
