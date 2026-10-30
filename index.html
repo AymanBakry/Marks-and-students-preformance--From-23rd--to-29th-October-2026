@@ -4,62 +4,128 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>نتائج الطلاب - مدرسة البلاد القديم الابتدائية الإعدادية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f1f5f9;--card:#fff;--text:#1e293b;--muted:#64748b;--main:#1d4ed8;--line:#e2e8f0;--ok:#15803d;--bad:#b91c1c}
-@media (prefers-color-scheme:dark){:root{--bg:#0f172a;--card:#1e293b;--text:#f1f5f9;--muted:#94a3b8;--main:#60a5fa;--line:#334155;--ok:#4ade80;--bad:#f87171}}
+:root{--red:#CE1126;--dred:#9d0d1e;--gold:#F5B700;--teal:#0d9488;--navy:#1e3a8a;--bg:#fff7ed;--text:#1f2937;color-scheme:light}
 *{box-sizing:border-box}
-body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
-header{background:var(--main);color:#fff;text-align:center;padding:24px 16px}
-header h1{margin:0;font-size:1.5rem}
-header p{margin:4px 0 0;opacity:.9}
-main{max-width:760px;margin:20px auto;padding:0 14px}
-.card{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.08);margin-bottom:18px}
-.staff{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
-.staff div{background:var(--bg);border-radius:10px;padding:10px;text-align:center;font-size:.92rem}
-.staff b{display:block;color:var(--main);font-size:.85rem}
-label{font-weight:bold;display:block;margin-bottom:8px}
+body{margin:0;font-family:'Cairo',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+
+/* الشريط العلوي */
+.top{background:var(--dred);color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;padding:6px;font-weight:700;font-size:.9rem}
+.top svg{width:34px;height:23px;border-radius:3px}
+
+/* الهيدر */
+header{background:linear-gradient(160deg,var(--red),#e63946);color:#fff;text-align:center;padding:22px 14px 8px;position:relative;overflow:hidden}
+header h1{margin:0;font-size:clamp(1.4rem,5vw,2.3rem);font-weight:900;text-shadow:0 2px 6px rgba(0,0,0,.25)}
+header p{margin:4px 0 0;font-weight:600;opacity:.95}
+.zig{height:20px;background:linear-gradient(135deg,var(--red) 25%,transparent 25%) -10px 0/20px 20px,linear-gradient(225deg,var(--red) 25%,transparent 25%) -10px 0/20px 20px}
+.hero{display:flex;justify-content:center;align-items:flex-end;gap:6px;margin-top:10px;position:relative}
+.hero svg{width:clamp(80px,22vw,120px);height:auto}
+.hero .deco{position:absolute;font-size:1.6rem;animation:float 3s ease-in-out infinite}
+.d1{top:0;right:8%}.d2{top:20px;left:10%;animation-delay:.8s}.d3{top:-6px;left:40%;animation-delay:1.4s}
+@keyframes float{50%{transform:translateY(-8px)}}
+
+main{max-width:820px;margin:18px auto;padding:0 14px}
+.card{background:#fff;border-radius:20px;padding:20px;box-shadow:0 6px 20px rgba(206,17,38,.10);margin-bottom:18px}
+
+/* الإدارة */
+.staff{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.staff div{border-radius:16px;padding:14px 10px;text-align:center;color:#fff;box-shadow:0 4px 10px rgba(0,0,0,.12)}
+.staff .ic{font-size:1.8rem;display:block}
+.staff small{display:block;font-weight:600;opacity:.95;font-size:.82rem}
+.staff strong{font-size:1.1rem;font-weight:900}
+.s1{background:linear-gradient(135deg,#CE1126,#f43f5e)}
+.s2{background:linear-gradient(135deg,#1e3a8a,#3b82f6)}
+.s3{background:linear-gradient(135deg,#0d9488,#2dd4bf)}
+.s4{background:linear-gradient(135deg,#d97706,#F5B700)}
+
+/* البحث */
+.search h3{margin:0 0 4px;font-weight:900;color:var(--red);font-size:1.3rem}
+.search p{margin:0 0 12px;color:#6b7280}
 .row{display:flex;gap:8px}
-input{flex:1;padding:12px;font-size:1.05rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text)}
-button{padding:12px 22px;font-size:1rem;border:0;border-radius:10px;background:var(--main);color:#fff;cursor:pointer}
+input{flex:1;min-width:0;padding:14px;font:inherit;font-size:1.1rem;font-weight:700;border:2px solid #fecaca;border-radius:14px;background:#fffbfb;text-align:center;letter-spacing:1px}
+input:focus{outline:none;border-color:var(--red)}
+button{padding:14px 24px;font:inherit;font-weight:800;font-size:1.05rem;border:0;border-radius:14px;color:#fff;background:linear-gradient(135deg,var(--red),#e63946);cursor:pointer;box-shadow:0 4px 12px rgba(206,17,38,.35)}
 button:disabled{opacity:.6}
-#msg{margin-top:12px;color:var(--bad);font-weight:bold}
-#student h2{margin:0 0 4px}
-.seat{color:var(--muted);margin-bottom:14px}
-table{width:100%;border-collapse:collapse}
-th,td{padding:10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}
-th{color:var(--muted);font-weight:normal;width:38%}
-.total{margin-top:14px;text-align:center;background:var(--bg);border-radius:12px;padding:14px;font-size:1.3rem;font-weight:bold;color:var(--ok)}
-footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 0 24px}
+#msg{margin-top:12px;color:var(--red);font-weight:800}
+
+/* بطاقة الطالب */
 .hidden{display:none}
+.stu-head{display:flex;align-items:center;gap:14px;margin-bottom:16px;padding-bottom:14px;border-bottom:2px dashed #fecaca}
+.avatar{width:66px;height:66px;flex:none;border-radius:50%;background:linear-gradient(135deg,var(--gold),#f97316);color:#fff;font-weight:900;font-size:2rem;display:grid;place-items:center;box-shadow:0 4px 10px rgba(0,0,0,.2)}
+.stu-head h2{margin:0;font-weight:900;font-size:clamp(1.2rem,4.5vw,1.7rem);color:var(--navy)}
+.seat{display:inline-block;margin-top:4px;background:#fee2e2;color:var(--dred);font-weight:800;padding:2px 12px;border-radius:99px;font-size:.9rem}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin-bottom:14px}
+.tile{--c:#6b7280;border-radius:16px;padding:12px;text-align:center;background:color-mix(in srgb,var(--c) 10%,#fff);border:2px solid color-mix(in srgb,var(--c) 35%,#fff)}
+.g1{--c:#16a34a}.g2{--c:#2563eb}.g3{--c:#ea580c}.g0{--c:#6b7280}
+.ti{font-size:1.5rem}
+.tl{font-weight:800;color:var(--c);font-size:.95rem}
+.tv b{font-size:1.7rem;font-weight:900;color:var(--c)}
+.tv span{color:#6b7280;font-weight:700}
+.bar{height:7px;background:#e5e7eb;border-radius:9px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--c);border-radius:9px}
+.comment{display:flex;gap:10px;background:#f0f9ff;border-right:5px solid var(--navy);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.comment:nth-of-type(2){background:#fefce8;border-color:var(--gold)}
+.ci{font-size:1.6rem}
+.comment b{font-weight:900;color:var(--navy)}
+.comment p{margin:0;font-weight:600}
+.totalbox{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,#fff1f2,#fff7ed);border-radius:18px;padding:14px;margin-top:6px}
+.ring{--c:#16a34a;flex:none;width:122px;height:122px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),#e5e7eb 0);display:grid;place-items:center}
+.ring div{width:94px;height:94px;border-radius:50%;background:#fff;display:grid;place-items:center;text-align:center;line-height:1.1;font-weight:900;font-size:1.7rem;color:var(--c)}
+.ring small{display:block;font-size:.8rem;color:#6b7280;font-weight:700}
+.totalbox h4{margin:0 0 4px;font-weight:900;font-size:1.15rem;color:var(--dred)}
+.totalbox p{margin:0;font-weight:700}
+
+/* الحافز */
+.motive{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.motive div{text-align:center;border-radius:16px;padding:12px;color:#fff;font-weight:900}
+.motive svg{width:70px;height:auto}
+.m1{background:linear-gradient(135deg,#0d9488,#2dd4bf)}.m2{background:linear-gradient(135deg,#1e3a8a,#3b82f6)}.m3{background:linear-gradient(135deg,#d97706,#F5B700)}
+
+footer{background:var(--dred);color:#fff;text-align:center;padding:14px;font-weight:700}
+footer small{display:block;opacity:.85;font-weight:600}
+@media(max-width:480px){.row{flex-direction:column}.totalbox{flex-direction:column;text-align:center}}
 </style>
 </head>
 <body>
+
+<!-- رسومات مشتركة -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="kid" viewBox="0 0 100 120">
+    <rect x="20" y="64" width="60" height="52" rx="20" fill="currentColor"/>
+    <circle cx="50" cy="40" r="23" fill="#f2c9a0"/>
+    <path d="M27 38Q29 12 50 14Q73 12 73 38Q63 25 50 27Q37 25 27 38Z" fill="#2b2b2b"/>
+    <circle cx="42" cy="42" r="2.6" fill="#222"/><circle cx="58" cy="42" r="2.6" fill="#222"/>
+    <path d="M42 51Q50 58 58 51" stroke="#222" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <rect x="28" y="80" width="44" height="28" rx="3" fill="#fff" stroke="#CE1126" stroke-width="2"/>
+    <path d="M50 80V108M34 88H46M34 95H46M54 88H66M54 95H66" stroke="#CE1126" stroke-width="1.8"/>
+  </symbol>
+  <symbol id="flag" viewBox="0 0 90 60">
+    <rect width="90" height="60" fill="#CE1126"/>
+    <path d="M0 0H24L36 6L24 12L36 18L24 24L36 30L24 36L36 42L24 48L36 54L24 60H0Z" fill="#fff"/>
+  </symbol>
+</svg>
+
+<div class="top"><svg><use href="#flag"/></svg> مملكة البحرين</div>
+
 <header>
   <h1>مدرسة البلاد القديم الابتدائية الإعدادية</h1>
-  <p>الاستعلام عن درجات الطلاب</p>
+  <p>بوابة الاستعلام عن درجات الطلاب</p>
+  <div class="hero">
+    <span class="deco d1">⭐</span><span class="deco d2">🎓</span><span class="deco d3">📚</span>
+    <svg style="color:#2563eb"><use href="#kid"/></svg>
+    <svg style="color:#F5B700"><use href="#kid"/></svg>
+    <svg style="color:#0d9488"><use href="#kid"/></svg>
+    <svg style="color:#7c3aed"><use href="#kid"/></svg>
+  </div>
 </header>
+<div class="zig"></div>
+
 <main>
   <section class="card">
     <div class="staff">
-      <div><b>مدير المدرسة</b>محمد ابراهيم</div>
-      <div><b>المدير المساعد</b>عبدالله دليم</div>
-      <div><b>المعلم الأول</b>عباس كاظم</div>
-      <div><b>معلم اللغة الإنجليزية</b>ايمن بكري</div>
-    </div>
-  </section>
-
-  <section class="card">
-    <label for="seat">أدخل رقم الجلوس</label>
-    <div class="row">
-      <input id="seat" type="text" inputmode="numeric" placeholder="مثال: 130511730" autocomplete="off">
-      <button id="btn">عرض الدرجات</button>
-    </div>
-    <div id="msg"></div>
-  </section>
-
-  <section id="student" class="card hidden"></section>
-</main>
-<footer>© مدرسة البلاد القديم الابتدائية الإعدادية</footer>
-<script src="script.js"></script>
-</body>
-</html>
+      <div class="s1"><span class="ic">👨‍💼</span><small>مدير المدرسة</small><strong>محمد ابراهيم</strong></div>
+      <div class="s2"><span class="ic">🧑‍💼</span><small>المدير المساعد</small><strong>عبدالله دليم</strong></div>
+      <div class="s3"><span class="ic">👨‍🏫</span><small>المعلم الأول</small><strong>عباس كاظم</strong></div>
+      <div class="s4"><span
