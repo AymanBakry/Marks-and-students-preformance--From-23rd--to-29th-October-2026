@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>نتائج الطلاب - مدرسة البلاد القديم الابتدائية الإعدادية</title>
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--text:#1e293b;--muted:#64748b;--main:#1d4ed8;--line:#e2e8f0;--ok:#15803d;--bad:#b91c1c}
+@media (prefers-color-scheme:dark){:root{--bg:#0f172a;--card:#1e293b;--text:#f1f5f9;--muted:#94a3b8;--main:#60a5fa;--line:#334155;--ok:#4ade80;--bad:#f87171}}
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+header{background:var(--main);color:#fff;text-align:center;padding:24px 16px}
+header h1{margin:0;font-size:1.5rem}
+header p{margin:4px 0 0;opacity:.9}
+main{max-width:760px;margin:20px auto;padding:0 14px}
+.card{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.08);margin-bottom:18px}
+.staff{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.staff div{background:var(--bg);border-radius:10px;padding:10px;text-align:center;font-size:.92rem}
+.staff b{display:block;color:var(--main);font-size:.85rem}
+label{font-weight:bold;display:block;margin-bottom:8px}
+.row{display:flex;gap:8px}
+input{flex:1;padding:12px;font-size:1.05rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text)}
+button{padding:12px 22px;font-size:1rem;border:0;border-radius:10px;background:var(--main);color:#fff;cursor:pointer}
+button:disabled{opacity:.6}
+#msg{margin-top:12px;color:var(--bad);font-weight:bold}
+#student h2{margin:0 0 4px}
+.seat{color:var(--muted);margin-bottom:14px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}
+th{color:var(--muted);font-weight:normal;width:38%}
+.total{margin-top:14px;text-align:center;background:var(--bg);border-radius:12px;padding:14px;font-size:1.3rem;font-weight:bold;color:var(--ok)}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 0 24px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>مدرسة البلاد القديم الابتدائية الإعدادية</h1>
+  <p>الاستعلام عن درجات الطلاب</p>
+</header>
+<main>
+  <section class="card">
+    <div class="staff">
+      <div><b>مدير المدرسة</b>محمد ابراهيم</div>
+      <div><b>المدير المساعد</b>عبدالله دليم</div>
+      <div><b>المعلم الأول</b>عباس كاظم</div>
+      <div><b>معلم اللغة الإنجليزية</b>ايمن بكري</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <label for="seat">أدخل رقم الجلوس</label>
+    <div class="row">
+      <input id="seat" type="text" inputmode="numeric" placeholder="مثال: 130511730" autocomplete="off">
+      <button id="btn">عرض الدرجات</button>
+    </div>
+    <div id="msg"></div>
+  </section>
+
+  <section id="student" class="card hidden"></section>
+</main>
+<footer>© مدرسة البلاد القديم الابتدائية الإعدادية</footer>
+
+<script>
+// ===== الإعدادات =====
+const SHEET_ID = "1VakRXXQchhLNML8Y44pgz1Ys-_Wr3dOo9F4QxrBoTng";
+const SHEET_NAME = "Sheet1";
+const URL_CSV = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+
+// أعمدة الدرجات (العد يبدأ من 0: A=0, B=1, C=2 ...)
+const FIELDS = [
+  { col: 2, label: "اختبار 1", max: 20 },
+  { col: 3, label: "الأداء الأكاديمي", text: true },
+  { col: 4, label: "المشاركة", max: 10 },
+  { col: 5, label: "الأداء السلوكي والانضباط الصفي", text: true },
+  { col: 6, label: "المذكرة", max: 10 },
+  { col: 7, label: "المهمة", max: 10 },
+  { col: 8, label: "درجة إضافية" },
+];
+const TOTAL_COL = 9;
+const TOTAL_MAX = 60;
+const FIRST_DATA_ROW = 2;
+
+let rows = null;
+
+function parseCSV(text) {
+  const out = []; let row = [], cur = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) {
+      if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; }
+      else cur += c;
+    } else if (c === '"') q = true;
+    else if (c === ",") { row.push(cur); cur = ""; }
+    else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(cur); out.push(row); row = []; cur = "";
+    } else cur += c;
+  }
+  if (cur !== "" || row.length) { row.push(cur); out.push(row); }
+  return out;
+}
+
+function normalize(s) {
+  return String(s || "")
+    .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
+    .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d))
+    .replace(/\D/g, "");
+}
+const esc = s => String(s).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+const num = v => { const n = parseFloat(String(v).replace(/[^\d.]/g, "")); return isNaN(n) ? null : n; };
+
+async function loadData() {
+  if (rows) return rows;
+  const res = await fetch(URL_CSV);
+  if (!res.ok) throw new Error("fetch failed");
+  rows = parseCSV(await res.text());
+  return rows;
+}
+
+function show(r) {
+  const box = document.getElementById("student");
+  let html = `<h2>${esc(r[1])}</h2><div class="seat">رقم الجلوس: ${esc(r[0])}</div><table>`;
+  FIELDS.forEach(f => {
+    const v = (r[f.col] || "").trim();
+    if (!v) return;
+    const shown = f.max ? `${esc(v.replace(/[^\d.]/g, ""))} / ${f.max}` : esc(v);
+    html += `<tr><th>${esc(f.label)}</th><td>${shown}</td></tr>`;
+  });
+  html += `</table><div class="total">المجموع: ${esc(num(r[TOTAL_COL]) ?? "-")} / ${TOTAL_MAX}</div>`;
+  box.innerHTML = html;
+  box.classList.remove("hidden");
+}
+
+async function search() {
+  const msg = document.getElementById("msg");
+  const box = document.getElementById("student");
+  const btn = document.getElementById("btn");
+  const seat = normalize(document.getElementById("seat").value);
+  msg.textContent = ""; box.classList.add("hidden");
+  if (!seat) { msg.textContent = "من فضلك أدخل رقم الجلوس."; return; }
+  btn.disabled = true; btn.textContent = "جاري البحث...";
+  try {
+    const data = await loadData();
+    const r = data.slice(FIRST_DATA_ROW).find(x => normalize(x[0]) === seat);
+    if (r) show(r); else msg.textContent = "لم يتم العثور على رقم الجلوس، تأكد من الرقم وحاول مرة أخرى.";
+  } catch (e) {
+    msg.textContent = "تعذر تحميل البيانات. تأكد أن الملف مشارك (أي شخص لديه الرابط) وحاول لاحقًا.";
+  } finally {
+    btn.disabled = false; btn.textContent = "عرض الدرجات";
+  }
+}
+
+document.getElementById("btn").addEventListener("click", search);
+document.getElementById("seat").addEventListener("keydown", e => { if (e.key === "Enter") search(); });
+</script>
+</body>
+</html>
